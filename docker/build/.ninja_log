@@ -1,9 +1,0 @@
-# ninja log v5
-23	61	1744238030271115400	CMakeFiles/GameEngine.dir/app/src/audio/audio.cpp.o	c5abdcacaa9e3f1e
-25	74	1744238030271115400	CMakeFiles/GameEngine.dir/app/src/editor/editor.cpp.o	dbde02a75aab9011
-27	86	1744238030273115000	CMakeFiles/GameEngine.dir/app/src/input/input.cpp.o	f7174e8a1b414cd6
-1061	1274	1744238031483997700	../bin/GameEngine	dcfa29685ad0c927
-30	100	1744238030278773400	CMakeFiles/GameEngine.dir/app/src/output/output.cpp.o	8a30028f75e7b11f
-32	112	1744238030277163700	CMakeFiles/GameEngine.dir/app/src/renderer/renderer.cpp.o	394aee80b27c464e
-33	125	1744238030278773400	CMakeFiles/GameEngine.dir/app/src/shader/shader.cpp.o	3fa9c61a887ef3c9
-29	1018	1744238031227324700	CMakeFiles/GameEngine.dir/app/src/main.cpp.o	45e881e3f22f7e22

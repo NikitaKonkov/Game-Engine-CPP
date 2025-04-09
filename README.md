@@ -136,9 +136,8 @@ Typical workflow:
 # First time setup
 dockrun.bat build
 
-# Development cycle
-dockrun.bat compile  # Build the project
-dockrun.bat direct-run  # Run the executable
+# Open Docker shell for development
+dockrun.bat shell
 ```
 
 #### Manual Docker Commands
@@ -152,15 +151,6 @@ docker build -t game-engine-cpp .
    
 # Run the container with interactive shell
 docker run -it --rm -v "%CD%":/app game-engine-cpp bash
-   
-# Build the project inside the container
-cd /app
-mkdir -p build && cd build
-cmake .. && make
-   
-# Run the executable
-cd /app/bin
-./GameEngine
 ```
 
 **For Linux/macOS users**:
@@ -170,20 +160,13 @@ docker build -t game-engine-cpp .
    
 # Run the container with interactive shell
 docker run -it --rm -v "$(pwd)":/app game-engine-cpp bash
-   
-# Build the project inside the container
-cd /app
-mkdir -p build && cd build
-cmake .. && make
-   
-# Run the executable
-cd /app/bin
-./GameEngine
 ```
 
-#### Working in Docker Shell Environment
+### Working in Docker Shell Environment
 
-When using `dockrun.bat shell` to access the container, you can build and run the project directly:
+#### Building and Running the Project
+
+Once inside the Docker shell (after running `dockrun.bat shell`), you can build and run the project:
 
 ```bash
 # Navigate to the docker directory
@@ -192,57 +175,34 @@ cd /app/docker
 # Build the project using the provided build script
 ./build.sh
 
-# The build script will:
-# 1. Configure the project with CMake
-# 2. Build the project using Ninja
-# 3. Prompt to run the application
-
-# You can also build with debug options
+# To build in debug mode
 ./build.sh debug
 
 # To run the executable directly
-cd /app/docker/bin
+cd /app/bin
 ./GameEngine
 ```
 
-The expected build output will show:
-- Source files found
-- Build configuration (Release/Debug)
-- Compiler information 
-- Output paths
-- Build status
+#### Using Xvfb for Graphical Applications
 
-After building, the engine will run and display:
-```
-Hello, World!
-Welcome to the C++ Game Engine
-```
-
-### Running SDL Applications in Docker with Xvfb
-
-Since Docker containers don't have a physical display, you can use Xvfb (X Virtual Framebuffer) to create a virtual display for SDL applications.
-
-#### Using Xvfb
-
-To run your application with Xvfb:
+Since Docker containers don't have a physical display, you need to use Xvfb to run SDL applications with graphics:
 
 ```bash
-# Enter the Docker shell
-dockrun.bat shell
-
 # Navigate to the docker directory
 cd /app/docker
 
-# Run the application with Xvfb
+# Build and run with Xvfb virtual display
 ./build.sh xvfb
 ```
 
 This will:
-1. Set up a virtual X11 display
-2. Start an x11vnc server for remote viewing
+1. Set up a virtual X11 display (`:99`)
+2. Start an x11vnc server for remote viewing (on port 5900)
 3. Run your SDL application on the virtual display
 
-#### Connecting with VNC
+**NOTE**: Always use the `xvfb` parameter with the build script when running graphical applications inside the Docker container.
+
+### Connecting with VNC to See Graphical Output
 
 You can view your application's graphical output using a VNC client:
 
@@ -260,33 +220,43 @@ You can view your application's graphical output using a VNC client:
    - Find port 5900 in the "PORT MAPPING" section
    - Click to open or copy the link
 
-#### Testing SDL Rendering in Docker
+### Complete Development Workflow Within Docker Shell
 
-To verify that SDL rendering works correctly in your Docker environment:
+1. **Enter the Docker shell**:
+   ```bash
+   # From Windows command prompt
+   dockrun.bat shell
+   ```
 
-```bash
-# Enter the Docker shell
-dockrun.bat shell
+2. **Build the code**:
+   ```bash
+   # Inside Docker shell
+   cd /app/docker
+   ./build.sh
+   ```
 
-# Run the SDL rendering test
-cd /app/docker
-chmod +x test_sdl_rendering.sh
-./test_sdl_rendering.sh
-```
+3. **Run with graphics (using Xvfb)**:
+   ```bash
+   # Inside Docker shell
+   cd /app/docker
+   ./build.sh xvfb
+   ```
+   Then connect with a VNC client to localhost:5900
 
-This test script will:
-- Create a simple SDL3 application
-- Set up Xvfb
-- Run the application to verify rendering capabilities
-- Report success or issues
+4. **Debug mode**:
+   ```bash
+   # Inside Docker shell
+   cd /app/docker
+   ./build.sh debug xvfb
+   ```
 
-### Development Workflow with Docker
-
-1. **Edit code on your host machine** - All changes are automatically visible inside the container
-2. **Build the code** - Use `dockrun.bat compile` to build your changes
-3. **Run the application** - Use `dockrun.bat direct-run` to test your changes
-4. **Debug** - Build in debug mode with `./build.sh debug` inside the container shell
-5. **Graphical Testing** - Use `./build.sh xvfb` and connect with VNC to test graphical output
+5. **Clean build**:
+   ```bash
+   # Inside Docker shell
+   cd /app/docker
+   rm -rf build
+   ./build.sh xvfb
+   ```
 
 ### Docker Container Details
 
