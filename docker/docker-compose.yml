@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  game-engine:
+    build: .
+    volumes:
+      - .:/app
+      - build-output:/app/build
+    working_dir: /app
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+volumes:
+  build-output:
+    # Named volume for build artifacts

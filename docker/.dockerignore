@@ -1,0 +1,28 @@
+# Development files
+.git/
+.vscode/
+.vs/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+build/
+bin/
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Project specific
+file_hashes.txt
