@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Add path to our custom CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Set output directories - modified to include bin directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
@@ -38,10 +41,27 @@ target_include_directories(GameEngine PRIVATE
     /app/includes
 )
 
-# If you need to link against libraries, add them here
-# target_link_libraries(GameEngine PRIVATE
-#     library_name
-# )
+# Find SDL3 package using our custom finder module
+find_package(SDL3 REQUIRED)
+
+# Link SDL3
+target_include_directories(GameEngine PRIVATE ${SDL3_INCLUDE_DIRS})
+target_link_libraries(GameEngine PRIVATE ${SDL3_LIBRARIES})
+
+# If SDL3_LIBRARIES is empty (which can happen with newer SDL3 versions), try linking directly to SDL3
+if(NOT SDL3_LIBRARIES)
+  target_link_libraries(GameEngine PRIVATE SDL3::SDL3)
+endif()
+
+# Copy DLLs on Windows if they exist
+if(WIN32)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/../bin/SDL3.dll")
+    add_custom_command(TARGET GameEngine POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/../bin/SDL3.dll"
+        $<TARGET_FILE_DIR:GameEngine>)
+  endif()
+endif()
 
 # Set compile options based on compiler
 if(MSVC)

@@ -27,6 +27,39 @@ This will install:
 - Make (build tool)
 - GDB (debugger)
 
+### Setting Up SDL3
+SDL3 (Simple DirectMedia Layer) is used for cross-platform graphics, audio, and input handling. To set up SDL3:
+
+1. Run the provided script to download and build SDL3 from source:
+   ```bash
+   cd tools
+   chmod +x get_sdl3.sh
+   ./get_sdl3.sh
+   ```
+   
+   This script will:
+   - Clone the SDL3 repository from GitHub
+   - Build SDL3 with CMake
+   - Configure it for use with your project
+
+2. Alternatively, you can install SDL3 manually:
+   ```bash
+   # Clone SDL3 repository
+   git clone https://github.com/libsdl-org/SDL.git libs/sdl3/SDL
+   
+   # Build SDL3
+   cd libs/sdl3/SDL
+   mkdir -p build && cd build
+   cmake .. -DCMAKE_BUILD_TYPE=Release
+   cmake --build . --config Release
+   ```
+
+3. To verify SDL3 was installed correctly:
+   ```bash
+   # The CMake configuration should automatically find SDL3
+   # when building your project if it's in the libs/sdl3 directory
+   ```
+
 ### Verifying CMake Installation
 To check the version of CMake installed, run:
 ```bash
@@ -42,7 +75,7 @@ Make sure the version is 3.14 or higher.
    ```
 3. Run the build script:
    ```bash
-   ./install.sh
+   ./msysrun.sh
    ```
    This will create a `build` directory, configure the project with CMake, and build the executable.
 4. After the build completes, press any key to launch the game engine.
@@ -50,7 +83,7 @@ Make sure the version is 3.14 or higher.
 ### Debugging with GDB
 To debug the game engine with GDB, run the build script with the `debug` flag:
 ```bash
-./install.sh debug
+./msysrun.sh debug
 ```
 This will build the project and launch it with GDB. You can use the following GDB commands:
 - `run` - Start the program
@@ -63,7 +96,7 @@ This will build the project and launch it with GDB. You can use the following GD
 ### Clean Build
 To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
 ```bash
-./install.sh clean
+./msysrun.sh clean
 ```
 This will delete the `build` directory, create a new one, configure the project with CMake, and build the executable. After the build completes, press any key to launch the game engine normally (without the debugger).
 
@@ -185,12 +218,75 @@ Hello, World!
 Welcome to the C++ Game Engine
 ```
 
+### Running SDL Applications in Docker with Xvfb
+
+Since Docker containers don't have a physical display, you can use Xvfb (X Virtual Framebuffer) to create a virtual display for SDL applications.
+
+#### Using Xvfb
+
+To run your application with Xvfb:
+
+```bash
+# Enter the Docker shell
+dockrun.bat shell
+
+# Navigate to the docker directory
+cd /app/docker
+
+# Run the application with Xvfb
+./build.sh xvfb
+```
+
+This will:
+1. Set up a virtual X11 display
+2. Start an x11vnc server for remote viewing
+3. Run your SDL application on the virtual display
+
+#### Connecting with VNC
+
+You can view your application's graphical output using a VNC client:
+
+1. **Using VNC Viewer**:
+   - Install a VNC viewer like [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/), [TightVNC](https://www.tightvnc.com/), or [VNC Viewer for Google Chrome](https://chrome.google.com/webstore/detail/vnc-viewer-for-google-chr/iabmpiboiopbgfabjmgeedhcmjenhbla)
+   - Connect to `localhost:5900`
+
+2. **Using VS Code**:
+   - If you're using VS Code with the Docker extension, you can:
+   - Look for the "PORTS" tab in the Docker extension
+   - Find port 5900 and click on "Open in Browser" or copy the link
+
+3. **Docker Desktop**:
+   - In Docker Desktop, select your running container
+   - Find port 5900 in the "PORT MAPPING" section
+   - Click to open or copy the link
+
+#### Testing SDL Rendering in Docker
+
+To verify that SDL rendering works correctly in your Docker environment:
+
+```bash
+# Enter the Docker shell
+dockrun.bat shell
+
+# Run the SDL rendering test
+cd /app/docker
+chmod +x test_sdl_rendering.sh
+./test_sdl_rendering.sh
+```
+
+This test script will:
+- Create a simple SDL3 application
+- Set up Xvfb
+- Run the application to verify rendering capabilities
+- Report success or issues
+
 ### Development Workflow with Docker
 
 1. **Edit code on your host machine** - All changes are automatically visible inside the container
 2. **Build the code** - Use `dockrun.bat compile` to build your changes
 3. **Run the application** - Use `dockrun.bat direct-run` to test your changes
 4. **Debug** - Build in debug mode with `./build.sh debug` inside the container shell
+5. **Graphical Testing** - Use `./build.sh xvfb` and connect with VNC to test graphical output
 
 ### Docker Container Details
 
@@ -200,12 +296,12 @@ The Docker container includes:
 - Graphics libraries (GLFW, GLEW, GLM)
 - 3D model importing (Assimp)
 - Git for version control
+- Xvfb and x11vnc for virtual display
 
 <br>
 <br>
 <br>
 <br>
-
 
 # Troubleshooting
 
@@ -223,6 +319,29 @@ Then, rebuild the project:
 ```bash
 cmake --build .
 ```
+
+### Xvfb and VNC Issues
+
+If you encounter issues with Xvfb or VNC:
+
+1. **"Xvfb not found" error**:
+   ```bash
+   # Inside Docker container
+   apt-get update && apt-get install -y xvfb x11-xserver-utils x11vnc
+   ```
+
+2. **"XDG_RUNTIME_DIR not set" warning**:
+   - This warning is usually harmless, but you can verify the directory exists:
+   ```bash
+   mkdir -p /tmp/xdg-runtime-dir
+   chmod 700 /tmp/xdg-runtime-dir
+   export XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir
+   ```
+
+3. **Cannot connect to VNC**:
+   - Verify the port is properly exposed: `docker ps` (look for 5900:5900)
+   - Check if x11vnc is running: `ps -ef | grep x11vnc`
+   - Try restarting the VNC server: `pkill x11vnc && x11vnc -display :99 -nopw -forever -quiet &`
 
 ## Contributing
 If you'd like to contribute to the Game-Engine-CPP project, please follow the standard GitHub workflow:

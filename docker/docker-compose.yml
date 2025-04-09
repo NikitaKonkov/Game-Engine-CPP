@@ -6,12 +6,37 @@ services:
     volumes:
       - .:/app
       - build-output:/app/build
+      # Mount X11 socket for direct display when available
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # Create a persistent volume for XDG_RUNTIME_DIR
+      - xdg-runtime-dir:/tmp/xdg-runtime-dir
     working_dir: /app
+    environment:
+      # Allow usage of either host DISPLAY or Xvfb
+      - DISPLAY=${DISPLAY:-:99}
+      # Set XDG_RUNTIME_DIR properly
+      - XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir
+      # For GPU acceleration if available
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
+    # Create runtime directory and make scripts executable
+    command: >
+      bash -c "mkdir -p /tmp/xdg-runtime-dir &&
+               chmod 700 /tmp/xdg-runtime-dir &&
+               chmod +x /app/docker/*.sh &&
+               bash"
+    # Uncomment for host networking (useful for X11 forwarding)
+    # network_mode: "host"
+    # For VNC access
+    ports:
+      - "5900:5900"
 
 volumes:
   build-output:
     # Named volume for build artifacts
+  xdg-runtime-dir:
+    # Named volume for XDG_RUNTIME_DIR
