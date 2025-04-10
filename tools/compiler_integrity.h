@@ -28,19 +28,19 @@ private:
 public:
     // Constructor
     RuleOfThree(size_t n = 0) : size(n) {
-        std::cout << "RuleOfThree: Constructor called\n";
+        // std::cout << "RuleOfThree: Constructor called\n";
         data = (n > 0) ? new int[n]() : nullptr;
     }
     
     // Destructor
     ~RuleOfThree() {
-        std::cout << "RuleOfThree: Destructor called\n";
+        // std::cout << "RuleOfThree: Destructor called\n";
         delete[] data;
     }
     
     // Copy constructor
     RuleOfThree(const RuleOfThree& other) : size(other.size) {
-        std::cout << "RuleOfThree: Copy constructor called\n";
+        // std::cout << "RuleOfThree: Copy constructor called\n";
         data = (size > 0) ? new int[size]() : nullptr;
         for (size_t i = 0; i < size; ++i) {
             data[i] = other.data[i];
@@ -49,7 +49,7 @@ public:
     
     // Copy assignment operator
     RuleOfThree& operator=(const RuleOfThree& other) {
-        std::cout << "RuleOfThree: Copy assignment called\n";
+        // std::cout << "RuleOfThree: Copy assignment called\n";
         if (this != &other) {
             delete[] data;
             size = other.size;
@@ -85,19 +85,19 @@ private:
 public:
     // Constructor
     RuleOfFive(size_t n = 0) : size(n) {
-        std::cout << "RuleOfFive: Constructor called\n";
+        // std::cout << "RuleOfFive: Constructor called\n";
         data = (n > 0) ? new int[n]() : nullptr;
     }
     
     // Destructor
     ~RuleOfFive() {
-        std::cout << "RuleOfFive: Destructor called\n";
+        // std::cout << "RuleOfFive: Destructor called\n";
         delete[] data;
     }
     
     // Copy constructor
     RuleOfFive(const RuleOfFive& other) : size(other.size) {
-        std::cout << "RuleOfFive: Copy constructor called\n";
+        // std::cout << "RuleOfFive: Copy constructor called\n";
         data = (size > 0) ? new int[size]() : nullptr;
         for (size_t i = 0; i < size; ++i) {
             data[i] = other.data[i];
@@ -106,7 +106,7 @@ public:
     
     // Copy assignment operator
     RuleOfFive& operator=(const RuleOfFive& other) {
-        std::cout << "RuleOfFive: Copy assignment called\n";
+        // std::cout << "RuleOfFive: Copy assignment called\n";
         if (this != &other) {
             delete[] data;
             size = other.size;
@@ -120,14 +120,14 @@ public:
     
     // Move constructor
     RuleOfFive(RuleOfFive&& other) noexcept : data(other.data), size(other.size) {
-        std::cout << "RuleOfFive: Move constructor called\n";
+        // std::cout << "RuleOfFive: Move constructor called\n";
         other.data = nullptr;
         other.size = 0;
     }
     
     // Move assignment operator
     RuleOfFive& operator=(RuleOfFive&& other) noexcept {
-        std::cout << "RuleOfFive: Move assignment called\n";
+        // std::cout << "RuleOfFive: Move assignment called\n";
         if (this != &other) {
             delete[] data;
             data = other.data;
@@ -161,7 +161,7 @@ private:
 public:
     // Constructor
     RuleOfZero(size_t n = 0) : data(n) {
-        std::cout << "RuleOfZero: Constructor called\n";
+        // std::cout << "RuleOfZero: Constructor called\n";
     }
     
     // No need to define destructor, copy/move constructors, or assignment operators
@@ -184,7 +184,7 @@ public:
 
 // ===== Test Functions =====
 void testRuleOfThree() {
-    std::cout << "\n===== Testing Rule of Three =====\n";
+    // std::cout << "\n===== Testing Rule of Three =====\n";
     
     // Test construction
     RuleOfThree obj1(5);
@@ -199,27 +199,27 @@ void testRuleOfThree() {
     for (size_t i = 0; i < obj2.getSize(); ++i) {
         assert(obj2.getValue(i) == obj1.getValue(i));
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Test copy assignment
     RuleOfThree obj3(2);
     obj3 = obj1;
-    std::cout << "After copy assignment, obj3 values: ";
+    // std::cout << "After copy assignment, obj3 values: ";
     for (size_t i = 0; i < obj3.getSize(); ++i) {
-        std::cout << obj3.getValue(i) << " ";
+        // std::cout << obj3.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Modify original to prove deep copy
     obj1.setValue(0, 999);
     assert(obj2.getValue(0) != 999);
-    std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << ", obj3[0] = " << obj3.getValue(0) << "\n";
+    // std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << ", obj3[0] = " << obj3.getValue(0) << "\n";
     
     // Objects will be destroyed when function ends
 }
 
 void testRuleOfFive() {
-    std::cout << "\n===== Testing Rule of Five =====\n";
+    // std::cout << "\n===== Testing Rule of Five =====\n";
     
     // Test construction
     RuleOfFive obj1(5);
@@ -229,44 +229,44 @@ void testRuleOfFive() {
     
     // Test copy construction
     RuleOfFive obj2 = obj1;
-    std::cout << "After copy construction, obj2 values: ";
+    // std::cout << "After copy construction, obj2 values: ";
     for (size_t i = 0; i < obj2.getSize(); ++i) {
-        std::cout << obj2.getValue(i) << " ";
+        // std::cout << obj2.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Test move construction - create a named temporary and move it
     RuleOfFive temp1(obj1);
     RuleOfFive obj3 = std::move(temp1);
-    std::cout << "After move construction, obj3 values: ";
+    // std::cout << "After move construction, obj3 values: ";
     for (size_t i = 0; i < obj3.getSize(); ++i) {
-        std::cout << obj3.getValue(i) << " ";
+        // std::cout << obj3.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Test move assignment - create a named temporary and move it
     RuleOfFive temp2(obj1);
     RuleOfFive obj4;
     obj4 = std::move(temp2);
-    std::cout << "After move assignment, obj4 values: ";
+    // std::cout << "After move assignment, obj4 values: ";
     for (size_t i = 0; i < obj4.getSize(); ++i) {
-        std::cout << obj4.getValue(i) << " ";
+        // std::cout << obj4.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Verify that moved-from objects are in valid but unspecified state
-    std::cout << "Moved-from temp1 size: " << temp1.getSize() << "\n";
-    std::cout << "Moved-from temp2 size: " << temp2.getSize() << "\n";
+    // std::cout << "Moved-from temp1 size: " << temp1.getSize() << "\n";
+    // std::cout << "Moved-from temp2 size: " << temp2.getSize() << "\n";
     
     // Modify original to prove deep copy
     obj1.setValue(0, 999);
-    std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << "\n";
+    // std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << "\n";
     
     // Objects will be destroyed when function ends
 }
 
 void testRuleOfZero() {
-    std::cout << "\n===== Testing Rule of Zero =====\n";
+    // std::cout << "\n===== Testing Rule of Zero =====\n";
     
     // Test construction
     RuleOfZero obj1(5);
@@ -276,39 +276,39 @@ void testRuleOfZero() {
     
     // Test copy construction
     RuleOfZero obj2 = obj1;
-    std::cout << "After copy construction, obj2 values: ";
+    // std::cout << "After copy construction, obj2 values: ";
     for (size_t i = 0; i < obj2.getSize(); ++i) {
-        std::cout << obj2.getValue(i) << " ";
+        // std::cout << obj2.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Test move construction - create a named temporary and move it
     RuleOfZero temp1(obj1);
     RuleOfZero obj3 = std::move(temp1);
-    std::cout << "After move construction, obj3 values: ";
+    // std::cout << "After move construction, obj3 values: ";
     for (size_t i = 0; i < obj3.getSize(); ++i) {
-        std::cout << obj3.getValue(i) << " ";
+        // std::cout << obj3.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Test move assignment - create a named temporary and move it
     RuleOfZero temp2(obj1);
     RuleOfZero obj4;
     obj4 = std::move(temp2);
-    std::cout << "After move assignment, obj4 values: ";
+    // std::cout << "After move assignment, obj4 values: ";
     for (size_t i = 0; i < obj4.getSize(); ++i) {
-        std::cout << obj4.getValue(i) << " ";
+        // std::cout << obj4.getValue(i) << " ";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
     
     // Modify original to prove deep copy
     obj1.setValue(0, 999);
-    std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << "\n";
+    // std::cout << "After modifying obj1, obj2[0] = " << obj2.getValue(0) << "\n";
     
     // Objects will be destroyed when function ends
 }
 void testExceptionSafety() {
-    std::cout << "\n===== Testing Exception Safety =====\n";
+    // std::cout << "\n===== Testing Exception Safety =====\n";
     
     // Setup a class that throws during copy
     class ThrowOnCopy {
@@ -328,15 +328,15 @@ void testExceptionSafety() {
         std::vector<ThrowOnCopy> v(1);
         v.resize(10); // Should throw
         
-        std::cout << "Error: Exception was not thrown\n";
+        // std::cout << "Error: Exception was not thrown\n";
     } catch (const std::exception& e) {
-        std::cout << "Caught expected exception: " << e.what() << "\n";
+        // std::cout << "Caught expected exception: " << e.what() << "\n";
     }
 }
 
 // Test memory alignment
 void testMemoryAlignment() {
-    std::cout << "\n===== Testing Memory Alignment =====\n";
+    // std::cout << "\n===== Testing Memory Alignment =====\n";
     
     // Test alignas
     struct alignas(64) AlignedStruct {
@@ -344,7 +344,7 @@ void testMemoryAlignment() {
     };
     
     AlignedStruct s;
-    std::cout << "AlignedStruct alignment: "
+     std::cout << "AlignedStruct alignment: "
               << (reinterpret_cast<uintptr_t>(&s) % 64 == 0 ? "correct" : "incorrect") << "\n";
     
     // Simpler approach using aligned objects directly
@@ -373,17 +373,17 @@ auto sum(Args... args) {
 }
 
 void testTemplateMetaprogramming() {
-    std::cout << "\n===== Testing Template Metaprogramming =====\n";
+    // std::cout << "\n===== Testing Template Metaprogramming =====\n";
     
     std::cout << "Vector has size(): " 
               << std::boolalpha << decltype(testHasSize<std::vector<int>>(0))::value << "\n";
     std::cout << "Int has size(): " 
               << std::boolalpha << decltype(testHasSize<int>(0))::value << "\n";
     
-    std::cout << "Sum of 1,2,3,4,5: " << sum(1,2,3,4,5) << "\n";
+    // std::cout << "Sum of 1,2,3,4,5: " << sum(1,2,3,4,5) << "\n";
 }
 void testConcurrency() {
-    std::cout << "\n===== Testing Concurrency =====\n";
+    // std::cout << "\n===== Testing Concurrency =====\n";
     
     std::atomic<int> counter(0);
     std::vector<std::thread> threads;
@@ -400,10 +400,10 @@ void testConcurrency() {
         t.join();
     }
     
-    std::cout << "Final counter value: " << counter << " (expected: 10000)\n";
+    // std::cout << "Final counter value: " << counter << " (expected: 10000)\n";
 }
 void testOptimization() {
-    std::cout << "\n===== Testing Compiler Optimizations =====\n";
+    // std::cout << "\n===== Testing Compiler Optimizations =====\n";
     
     // Test constant folding
     constexpr int result = 1 + 2 + 3 + 4 + 5;
@@ -421,7 +421,7 @@ void testOptimization() {
     std::cout << "Loop execution time: " << elapsed.count() << "ms\n";
 }
 int test_a() {
-    std::cout << "Testing the Rule of Three/Five/Zero\n";
+    // std::cout << "Testing the Rule of Three/Five/Zero\n";
     testRuleOfThree();
     testRuleOfFive();
     testRuleOfZero();
@@ -430,7 +430,7 @@ int test_a() {
     testTemplateMetaprogramming();
     testConcurrency();
     testOptimization();
-    std::cout << "\nAll tests completed.\n";
+    // std::cout << "\nAll tests completed.\n";
     return 0;
 }
 #endif // INTEGRITY_H

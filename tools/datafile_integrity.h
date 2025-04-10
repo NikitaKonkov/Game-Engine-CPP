@@ -97,7 +97,7 @@ std::vector<FileInfo> listFilesWithHash(const std::string &path)
         // Check if directory exists
         if (!directoryExists(path))
         {
-            std::cout << "Directory does not exist: " << path << std::endl;
+            // std::cout << "Directory does not exist: " << path << std::endl;
             return fileInfoList;
         }
         // Iterate through directory (non-recursive)
@@ -157,13 +157,13 @@ int test_b()
         "../include"
     };
     
-    std::cout << "Scanning specific directories for files...\n" << std::endl;
+    // std::cout << "Scanning specific directories for files...\n" << std::endl;
     
     bool foundAnyDirectory = false;
     std::vector<FileInfo> allFileInfo;
     
     // Define the width for hash values (max digits in uint_fast64_t)
-    const int HASH_WIDTH = 20;  // 2^64-1 has 20 digits
+    // const int HASH_WIDTH = 20;  // 2^64-1 has 20 digits
     
     // Iterate through each specific directory
     for (const auto &dirPath : specificDirectories)
@@ -174,7 +174,7 @@ int test_b()
             continue;
         }
         
-        std::cout << "\n=== Scanning directory: " << dirPath << " ===" << std::endl;
+        // std::cout << "\n=== Scanning directory: " << dirPath << " ===" << std::endl;
         
         // Check if directory exists before attempting to list files
         if (directoryExists(dirPath))
@@ -186,35 +186,35 @@ int test_b()
             
             if (files.empty())
             {
-                std::cout << "No files found in directory: " << dirPath << std::endl;
+                // std::cout << "No files found in directory: " << dirPath << std::endl;
             }
             else
             {
-                std::cout << "Files in directory " << dirPath << ":" << std::endl;
+                // std::cout << "Files in directory " << dirPath << ":" << std::endl;
                 for (const auto &file : files)
                 {
                     // Format hash with fixed width, zero-padded for console output
-                    std::cout << " Hash: " << std::setw(HASH_WIDTH) << std::setfill('0') << file.hash 
-                              << " " << file.name 
-                              << " (Size: " << file.size << " bytes)" << std::endl;
+                    // std::cout << " Hash: " << std::setw(HASH_WIDTH) << std::setfill('0') << file.hash 
+                              // << " " << file.name 
+                              // << " (Size: " << file.size << " bytes)" << std::endl;
                     
                     // Add to the combined list
                     allFileInfo.push_back(file);
                 }
-                std::cout << "Total files: " << files.size() << std::endl;
+                // std::cout << "Total files: " << files.size() << std::endl;
             }
         }
         else
         {
-            std::cout << "Directory does not exist: " << dirPath << std::endl;
+            // std::cout << "Directory does not exist: " << dirPath << std::endl;
         }
         
-        std::cout << "\n--------------------------------------------------\n" << std::endl;
+        // std::cout << "\n--------------------------------------------------\n" << std::endl;
     }
     
     if (!foundAnyDirectory)
     {
-        std::cout << "None of the specified directories were found." << std::endl;
+        // std::cout << "None of the specified directories were found." << std::endl;
         return 1;
     }
     
@@ -222,7 +222,7 @@ int test_b()
     std::string outputFileName = "new.hash";
     if (saveFileInfoToTxt(allFileInfo, outputFileName))
     {
-        std::cout << "File information and hashes saved to: " << outputFileName << std::endl;
+        // std::cout << "File information and hashes saved to: " << outputFileName << std::endl;
     }
     else
     {

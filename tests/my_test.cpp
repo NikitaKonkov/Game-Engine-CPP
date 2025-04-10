@@ -1,6 +1,7 @@
 #include "../include/header.h" // Include the header file for the hello function
 #include "../tools/compiler_integrity.h" // Include the integrity header file for the RuleOfThree class
 #include "../tools/datafile_integrity.h" // Include the datafile integrity header file for file operations
+#include "sdl_test.h" // Include the SDL test header file for SDL operations
 #include <string.h>
 #include <iostream>
 
@@ -34,6 +35,6 @@ int main(int argc, char const *argv[])
 
     std::cout << "Hello, World!" << std::endl; // Print a message to the console
     std::cout << "Welcome to the C++ Game Engine" << std::endl; // Print another message  
-
+    finish(); // Call the finish function from the SDL test header
     return 0;
 }
