@@ -1,85 +1,134 @@
 @echo off
+REM Game Engine Docker Helper Script
+REM Usage: dockrun.bat {build|run|shell|clean|rebuild|compile|direct-run}
+
 SETLOCAL EnableDelayedExpansion
 
-SET IMAGE_NAME=game-engine-cpp
-SET CONTAINER_NAME=game-engine-cpp-dev
+REM Define colors for terminal output
+set "GREEN=[92m"
+set "YELLOW=[93m"
+set "BLUE=[94m"
+set "MAGENTA=[95m"
+set "CYAN=[96m"
+set "WHITE=[97m"
+set "RESET=[0m"
 
-echo =^> Game Engine Docker Helper
+REM Project directories
+set "PROJECT_DIR=%CD%"
+set "DOCKER_DIR=%PROJECT_DIR%\docker"
+set "BUILD_DIR=%PROJECT_DIR%\build"
+set "BIN_DIR=%PROJECT_DIR%\bin"
 
-IF "%1"=="" (
-    GOTO usage
-) ELSE IF "%1"=="build" (
-    GOTO build
-) ELSE IF "%1"=="run" (
-    GOTO run
-) ELSE IF "%1"=="debug" (
-    GOTO debug
-) ELSE IF "%1"=="clean" (
-    GOTO clean
-) ELSE IF "%1"=="rebuild" (
-    GOTO rebuild
-) ELSE IF "%1"=="compile" (
-    GOTO compile
-) ELSE IF "%1"=="shell" (
-    GOTO shell
-) ELSE (
-    GOTO usage
+REM Docker settings
+set "IMAGE_NAME=game-engine-cpp"
+set "CONTAINER_NAME=game-engine-dev"
+
+REM Get command argument
+set "COMMAND=%1"
+
+echo %CYAN%=^> Game Engine Docker Helper%RESET%
+
+if "%COMMAND%"=="" (
+    call :show_help
+    exit /b 0
 )
 
-:usage
-echo Usage: dockrun.bat {build^|run^|debug^|clean^|rebuild^|compile^|direct-run^|shell}
+if "%COMMAND%"=="help" (
+    call :show_help
+    exit /b 0
+)
+
+if "%COMMAND%"=="build" (
+    echo Building Docker image...
+    docker build -t %IMAGE_NAME% "%DOCKER_DIR%"
+    exit /b %ERRORLEVEL%
+)
+
+if "%COMMAND%"=="shell" (
+    echo Opening an interactive shell in the Docker container...
+    docker run --rm -it -v "%PROJECT_DIR%:/app" --name %CONTAINER_NAME% %IMAGE_NAME% bash
+    exit /b %ERRORLEVEL%
+)
+
+if "%COMMAND%"=="clean" (
+    echo Cleaning Docker resources...
+    docker stop %CONTAINER_NAME% 2>nul
+    docker rm %CONTAINER_NAME% 2>nul
+    docker rmi %IMAGE_NAME% 2>nul
+    exit /b 0
+)
+
+if "%COMMAND%"=="rebuild" (
+    echo Rebuilding Docker image...
+    docker stop %CONTAINER_NAME% 2>nul
+    docker rm %CONTAINER_NAME% 2>nul
+    docker rmi %IMAGE_NAME% 2>nul
+    docker build -t %IMAGE_NAME% "%DOCKER_DIR%"
+    exit /b %ERRORLEVEL%
+)
+
+if "%COMMAND%"=="compile" (
+    echo Compiling the project inside Docker...
+    
+    REM Create output directories if they don't exist
+    if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
+    if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
+    
+    REM Fix line endings in shell scripts before execution
+    echo Converting script line endings for compatibility...
+    docker run --rm -v "%PROJECT_DIR%:/app" %IMAGE_NAME% bash -c "find /app/docker -name \"*.sh\" -type f -exec sed -i 's/\r$//' {} \; && chmod +x /app/docker/*.sh"
+    
+    REM Run the build script in Docker with proper paths
+    docker run --rm -v "%PROJECT_DIR%:/app" %IMAGE_NAME% bash -c "cd /app/docker && ./build.sh"
+    exit /b %ERRORLEVEL%
+)
+
+if "%COMMAND%"=="run" (
+    echo Building and running the application...
+    
+    REM Check if the Docker image exists, if not build it
+    docker image inspect %IMAGE_NAME% >nul 2>&1
+    if !ERRORLEVEL! neq 0 (
+        echo Docker image not found. Building it first...
+        docker build -t %IMAGE_NAME% "%DOCKER_DIR%"
+    )
+    
+    REM Fix line endings before running
+    docker run --rm -v "%PROJECT_DIR%:/app" %IMAGE_NAME% bash -c "find /app/docker -name \"*.sh\" -type f -exec sed -i 's/\r$//' {} \; && chmod +x /app/docker/*.sh"
+    
+    REM Compile and run
+    docker run --rm -v "%PROJECT_DIR%:/app" %IMAGE_NAME% bash -c "cd /app/docker && ./build.sh"
+    exit /b %ERRORLEVEL%
+)
+
+if "%COMMAND%"=="direct-run" (
+    echo Running the application directly without build...
+    
+    REM Check if the binary exists
+    if not exist "%BIN_DIR%\GameEngine.exe" (
+        echo Error: GameEngine executable not found in the bin directory.
+        echo Build the project first using: dockrun.bat compile
+        exit /b 1
+    )
+    
+    "%BIN_DIR%\GameEngine.exe"
+    exit /b %ERRORLEVEL%
+)
+
+echo %YELLOW%Unknown command: %COMMAND%%RESET%
+call :show_help
+exit /b 1
+
+:show_help
+echo %GREEN%Usage: dockrun.bat {command}%RESET%
 echo.
-echo   build      - Build Docker image
-echo   run        - Run the application in Docker with build step
-echo   debug      - Run the application in debug mode in Docker
-echo   clean      - Remove Docker image and containers
-echo   rebuild    - Clean and rebuild Docker image
-echo   compile    - Build the project inside Docker
-echo   shell      - Get a shell inside the Docker container
+echo Available commands:
+echo   %CYAN%build%RESET%       - Build the Docker image
+echo   %CYAN%run%RESET%         - Build and run the application
+echo   %CYAN%shell%RESET%       - Open an interactive shell in the container
+echo   %CYAN%clean%RESET%       - Remove Docker image and containers
+echo   %CYAN%rebuild%RESET%     - Clean and rebuild Docker image
+echo   %CYAN%compile%RESET%     - Build the project inside Docker
+echo   %CYAN%direct-run%RESET%  - Directly run the executable without build
 echo.
-GOTO :EOF
-
-:build
-echo Building Docker image...
-docker build -t %IMAGE_NAME% docker
-echo Build complete!
-GOTO :EOF
-
-:run
-echo Running the application in Docker...
-docker run --rm -it ^
-  -v "%CD%":/app ^
-  %IMAGE_NAME% /bin/bash -c "cd /app && chmod +x /app/docker/build.sh && /app/docker/build.sh"
-GOTO :EOF
-
-:debug
-echo Running the application in debug mode in Docker...
-docker run --rm -it ^
-  -v "%CD%":/app ^
-  %IMAGE_NAME% /bin/bash -c "cd /app && chmod +x /app/docker/build.sh && /app/docker/build.sh debug"
-GOTO :EOF
-
-:clean
-echo Cleaning Docker resources...
-docker run --rm -v "%CD%":/app %IMAGE_NAME% /bin/bash -c "cd /app && chmod +x /app/docker/build.sh && /app/docker/build.sh clean" 2>NUL
-docker rm -f %CONTAINER_NAME% 2>NUL
-docker rmi -f %IMAGE_NAME% 2>NUL
-echo Clean complete!
-GOTO :EOF
-
-:rebuild
-CALL :clean
-CALL :build
-GOTO :EOF
-
-:compile
-echo Compiling the project inside Docker...
-docker run --rm -it -v "%CD%":/app %IMAGE_NAME% /bin/bash -c "cd /app && chmod +x /app/docker/build.sh && /app/docker/build.sh"
-GOTO :EOF
-
-:shell
-echo Opening a shell inside the Docker container...
-docker run --rm -it ^
-  -v "%CD%":/app ^
-  %IMAGE_NAME% /bin/bash
-GOTO :EOF
+exit /b 0
