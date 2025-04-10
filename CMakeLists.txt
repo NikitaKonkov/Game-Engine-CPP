@@ -5,10 +5,25 @@ cmake_minimum_required(VERSION 3.14)
 # Project name and language
 project(GameEngine VERSION 0.1.0 LANGUAGES CXX)
 
+# Add near the top of your main CMakeLists.txt, after the project() call
+enable_testing()
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Force the Ninja generator to avoid mismatches
+if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+  message(STATUS "Regenerating with Ninja...")
+  set(CLEAN_BUILD_DIR "${CMAKE_BINARY_DIR}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${CLEAN_BUILD_DIR})
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -G Ninja ${CMAKE_SOURCE_DIR}
+  )
+
+  # return()
+endif()
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
@@ -22,8 +37,29 @@ file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/src/*.hpp"
 )
 
-# Add executable target with all collected source files
-add_executable(GameEngine ${SOURCES})
+# Create a library with your engine code (all sources except main.cpp)
+file(GLOB_RECURSE LIB_SOURCES 
+    "${CMAKE_SOURCE_DIR}/src/audio/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/editor/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/input/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/output/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/renderer/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/shader/*.cpp"
+)
+add_library(GameEngineLib SHARED ${LIB_SOURCES})
+
+# Create your main executable with just the main file
+add_executable(GameEngine src/main.cpp)
+
+# Link the executable to the library
+target_link_libraries(GameEngine PRIVATE GameEngineLib)
+
+# Also link SDL3 directly to the executable since it calls SDL functions
+if(TARGET SDL3_Found)
+    target_link_libraries(GameEngine PRIVATE ${SDL3_LIBRARIES})
+else()
+    target_link_libraries(GameEngine PRIVATE SDL3::SDL3)
+endif()
 
 # Include directories
 target_include_directories(GameEngine PRIVATE
@@ -202,12 +238,33 @@ endif()
 # If we have a custom SDL3 target, use that instead
 if(TARGET SDL3_Found)
     message(STATUS "Using custom SDL3 target for linking")
-    target_link_libraries(GameEngine PRIVATE ${SDL3_LIBRARIES})
+    target_link_libraries(GameEngineLib PRIVATE ${SDL3_LIBRARIES})
 else()
     # Otherwise use the standard target
     message(STATUS "Using standard SDL3::SDL3 target for linking")
-    target_link_libraries(GameEngine PRIVATE SDL3::SDL3)
+    target_link_libraries(GameEngineLib PRIVATE SDL3::SDL3)
 endif()
+
+# Find SDL3 include directory - add this after you find SDL3
+if(SDL3_FOUND)
+    # Get SDL3 include directories
+    get_target_property(SDL3_INCLUDE_DIRS SDL3::SDL3 INTERFACE_INCLUDE_DIRECTORIES)
+    message(STATUS "SDL3 include directories: ${SDL3_INCLUDE_DIRS}")
+endif()
+
+# If using custom SDL3 target
+if(TARGET SDL3_Found)
+    # Set include directories for the custom target
+    if(EXISTS "${SDL3_DIR}/../include")
+        set_target_properties(SDL3_Found PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${SDL3_DIR}/../include")
+        set(SDL3_INCLUDE_DIRS "${SDL3_DIR}/../include")
+    endif()
+endif()
+
+# Add SDL3 include directories to your targets
+target_include_directories(GameEngineLib PUBLIC ${SDL3_INCLUDE_DIRS})
+target_include_directories(GameEngine PUBLIC ${SDL3_INCLUDE_DIRS})
 
 # Enhanced SDL3 DLL finder
 set(SDL3_DLL_FOUND FALSE)
@@ -257,6 +314,9 @@ else()
     target_compile_options(GameEngine PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+# Add this before trying to link to GameEngine
+set_target_properties(GameEngine PROPERTIES ENABLE_EXPORTS ON)
+
 # Install rules (optional)
 install(TARGETS GameEngine
     RUNTIME DESTINATION bin
@@ -265,6 +325,13 @@ install(TARGETS GameEngine
 # Enable testing (optional)
 # enable_testing()
 # add_test(NAME GameEngineTests COMMAND GameEngine)
+
+# Example for adding a test
+add_executable(my_test tests/my_test.cpp)
+target_link_libraries(my_test PRIVATE GameEngineLib) # Link to your main library
+
+# Register with CTest
+add_test(NAME MyTest COMMAND my_test)
 
 # Print configuration summary
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")

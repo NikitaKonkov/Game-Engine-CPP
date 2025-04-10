@@ -152,9 +152,9 @@ int test_b()
 {
     // Define specific directories to scan
     const std::array<std::string, 3> specificDirectories = {
-        "tools",
-        "src",
-        "include"
+        "../tools",
+        "../src",
+        "../include"
     };
     
     std::cout << "Scanning specific directories for files...\n" << std::endl;
