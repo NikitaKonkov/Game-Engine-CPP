@@ -34,6 +34,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 file(GLOB_RECURSE SOURCES 
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_SOURCE_DIR}/tools/*.h"
+    "${CMAKE_SOURCE_DIR}/src/class/*.h"
     "${CMAKE_SOURCE_DIR}/src/*.hpp"
 )
 
@@ -45,6 +46,7 @@ file(GLOB_RECURSE LIB_SOURCES
     "${CMAKE_SOURCE_DIR}/src/output/*.cpp"
     "${CMAKE_SOURCE_DIR}/src/renderer/*.cpp"
     "${CMAKE_SOURCE_DIR}/src/shader/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/class/*.cpp"
 )
 add_library(GameEngineLib SHARED ${LIB_SOURCES})
 
@@ -65,6 +67,13 @@ endif()
 target_include_directories(GameEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/includes
 )
+
+
+#########################################################
+######### Debugging SDL3 library finding issue ##########
+######################################################### 
+# yeah went crazy with this, but it works
+# This is a workaround for the SDL3 import library finding issue
 
 # Find SDL3 package
 # First try to find it in the system
@@ -321,6 +330,12 @@ set_target_properties(GameEngine PROPERTIES ENABLE_EXPORTS ON)
 install(TARGETS GameEngine
     RUNTIME DESTINATION bin
 )
+
+
+
+
+
+
 
 # Enable testing (optional)
 # enable_testing()
