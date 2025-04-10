@@ -1,7 +1,12 @@
-## Game-Engine-CPP
-Welcome to the Game-Engine-CPP project! This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.
+# Game-Engine-CPP
+### `Welcome to the Game-Engine-CPP project! `
 
-# Option 1: Using MSYS2 (Recommended)
+#### `This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.`
+
+<br>
+<br>
+
+# Option 1: Using MSYS2
 
 ### Prerequisites
 Before you start, make sure you have the following installed:
@@ -85,13 +90,7 @@ To debug the game engine with GDB, run the build script with the `debug` flag:
 ```bash
 ./msysrun.sh debug
 ```
-This will build the project and launch it with GDB. You can use the following GDB commands:
-- `run` - Start the program
-- `break main` - Set a breakpoint at the main function
-- `next` - Step over to the next line
-- `step` - Step into a function
-- `continue` - Resume execution until the next breakpoint
-- `quit` - Exit the debugger
+This will build the project and launch it with GDB. You can find the manual in `/debugger/debugger_manual.md` 
 
 ### Clean Build
 To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
@@ -101,8 +100,7 @@ To perform a clean build, which deletes the old build files and does a fresh bui
 This will delete the `build` directory, create a new one, configure the project with CMake, and build the executable. After the build completes, press any key to launch the game engine normally (without the debugger).
 
 <br>
-<br>
-<br>
+
 <br>
 
 # Option 2: Using Docker
@@ -119,47 +117,27 @@ Before you start, make sure you have the following installed:
 We provide a convenient batch script `dockrun.bat` to manage Docker operations:
 
 ```cmd
-dockrun.bat {build|run|shell|clean|rebuild|compile|direct-run}
+dockrun.bat { build | shell | clean | rebuild | compile }
 ```
 
 Commands:
 - `build` - Build the Docker image
-- `run` - Build and run the application (with interactive prompt)
 - `shell` - Open an interactive shell in the container
 - `clean` - Remove Docker image and containers
 - `rebuild` - Clean and rebuild Docker image
 - `compile` - Build the project inside Docker
-- `direct-run` - Directly run the executable without build or prompt
+
 
 Typical workflow:
 ```cmd
-# First time setup
+# Build the container
+dockrun.bat build
+
+# Compile the build
 dockrun.bat build
 
 # Open Docker shell for development
 dockrun.bat shell
-```
-
-#### Manual Docker Commands
-
-If you prefer using Docker directly:
-
-**For Windows users**:
-```cmd
-# Build the Docker image
-docker build -t game-engine-cpp .
-   
-# Run the container with interactive shell
-docker run -it --rm -v "%CD%":/app game-engine-cpp bash
-```
-
-**For Linux/macOS users**:
-```bash
-# Build the Docker image
-docker build -t game-engine-cpp .
-   
-# Run the container with interactive shell
-docker run -it --rm -v "$(pwd)":/app game-engine-cpp bash
 ```
 
 ### Working in Docker Shell Environment
@@ -173,7 +151,10 @@ Once inside the Docker shell (after running `dockrun.bat shell`), you can build 
 cd /app/docker
 
 # Build the project using the provided build script
-./build.sh
+./build.sh <- [only build, prints no video device error]
+
+# Build and run with Xvfb virtual display
+./build.sh xvfb
 
 # To build in debug mode
 ./build.sh debug
@@ -183,22 +164,6 @@ cd /app/bin
 ./GameEngine
 ```
 
-#### Using Xvfb for Graphical Applications
-
-Since Docker containers don't have a physical display, you need to use Xvfb to run SDL applications with graphics:
-
-```bash
-# Navigate to the docker directory
-cd /app/docker
-
-# Build and run with Xvfb virtual display
-./build.sh xvfb
-```
-
-This will:
-1. Set up a virtual X11 display (`:99`)
-2. Start an x11vnc server for remote viewing (on port 5900)
-3. Run your SDL application on the virtual display
 
 **NOTE**: Always use the `xvfb` parameter with the build script when running graphical applications inside the Docker container.
 
@@ -209,56 +174,30 @@ You can view your application's graphical output using a VNC client:
 1. **Using VNC Viewer**:
    - Install a VNC viewer like [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/), [TightVNC](https://www.tightvnc.com/), or [VNC Viewer for Google Chrome](https://chrome.google.com/webstore/detail/vnc-viewer-for-google-chr/iabmpiboiopbgfabjmgeedhcmjenhbla)
    - Connect to `localhost:5900`
+   
 
-2. **Using VS Code**:
-   - If you're using VS Code with the Docker extension, you can:
-   - Look for the "PORTS" tab in the Docker extension
-   - Find port 5900 and click on "Open in Browser" or copy the link
-
-3. **Docker Desktop**:
+2. **Docker Desktop**:
    - In Docker Desktop, select your running container
    - Find port 5900 in the "PORT MAPPING" section
    - Click to open or copy the link
+   This will start a virtual X display and VNC server with the following message:
+   ```
+   ============= VNC CONNECTION INFO =============
+   VNC server started on <container-id>:5900
+   To connect from Docker host:
+     - Use a VNC viewer to connect to: localhost:5900
+   
+   Connection options:
+     1. Docker Desktop: Use the 'PORT' link next to container
+     2. VS Code: Click 'PORTS' tab and look for 5900
+     3. Command line: Use 'docker port <container_id> 5900'
 
-### Complete Development Workflow Within Docker Shell
-
-1. **Enter the Docker shell**:
-   ```bash
-   # From Windows command prompt
-   dockrun.bat shell
+   The VNC desktop is:      cb7e353684f5:0 <- dont use ":0" at the end
+   PORT=5900
+   ================================================
    ```
 
-2. **Build the code**:
-   ```bash
-   # Inside Docker shell
-   cd /app/docker
-   ./build.sh
-   ```
-
-3. **Run with graphics (using Xvfb)**:
-   ```bash
-   # Inside Docker shell
-   cd /app/docker
-   ./build.sh xvfb
-   ```
-   Then connect with a VNC client to localhost:5900
-
-4. **Debug mode**:
-   ```bash
-   # Inside Docker shell
-   cd /app/docker
-   ./build.sh debug xvfb
-   ```
-
-5. **Clean build**:
-   ```bash
-   # Inside Docker shell
-   cd /app/docker
-   rm -rf build
-   ./build.sh xvfb
-   ```
-
-### Docker Container Details
+## Docker Container Details
 
 The Docker container includes:
 - Ubuntu 22.04 as the base OS
@@ -266,7 +205,7 @@ The Docker container includes:
 - Graphics libraries (GLFW, GLEW, GLM)
 - 3D model importing (Assimp)
 - Git for version control
-- Xvfb and x11vnc for virtual display
+- Xvfb for virtual display
 
 <br>
 <br>

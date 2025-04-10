@@ -46,7 +46,7 @@ int main(int argc, char const *argv[])
     std::cout << "Welcome to the C++ Game Engine" << std::endl; // Print another message
     
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return -1;
     }
