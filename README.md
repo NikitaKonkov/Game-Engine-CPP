@@ -2,23 +2,28 @@
 
 #### This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.
 
+
+
 <br>
+
+##### `Only use one option per repository`
+
 <br>
+
 
 # Option 1: Using MSYS2
 
 ### Prerequisites
 Before you start, make sure you have the following installed:
 - Windows 10 or later
-- MSYS2 UCRT64 environment
+- MSYS2 UCRT64 - [MSYS2 x86_64](https://www.msys2.org/) for Windows only
 
 ### Setting Up MSYS2
-1. Download the MSYS2 installer from the official website:
-   - [msys2-x86_64-20250221.exe](https://github.com/msys2/msys2-installer/releases/download/2025-02-21/msys2-x86_64-20250221.exe)
-2. Run the installer and follow the installation wizard. Make sure to install MSYS2 to the `C:\` root directory.
+1. After Download, run the installer.
+2. Make sure to install MSYS2 to the `C:\` root directory.
 3. After installation, open the "MSYS2 UCRT64" terminal from the Start menu.
 
-### Installing Required Packages
+### Installing Required Packages for MSYS2
 In the MSYS2 UCRT64 terminal, run the following commands to install the necessary packages:
 ```bash
 pacman -Syu
@@ -39,35 +44,39 @@ cmake --version
 Make sure the version is 3.14 or higher.
 
 ### Building the Project
-1. Clone the Game-Engine-CPP repository or download the source code.
+1. Clone the Game-Engine-CPP repository or download the source code:
+   ```bash
+   git clone https://github.com/NikitaKonkov/Game-Engine-CPP.git
+   ```
 2. In the MSYS2 UCRT64 terminal, navigate to the project directory:
    ```bash
-   cd /c/path/to/Game-Engine-CPP
+   cd [YOUR PATH FOR THE PROJECT]/Game-Engine-CPP
    ```
 3. Run the install script:
    ```bash
    ./install.sh
    ```
-   This will create a `build` directory, configure the project with CMake, and build the `run.sh`.
-4. After the build completes, press any key to launch the game engine.
-### Normal Build
-```bash
-./run.sh
-```
-### Debugging with GDB
-To debug the game engine with GDB, run the build script with the `debug` flag:
-```bash
-./run.sh debug
-```
-This will build the project and launch it with GDB. You can find the manual in `/debugger/debugger_manual.md` 
-
-### Clean Build
-To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
-```bash
-./run.sh clean
-```
-This will delete the `build` directory, create a new one, configure the project with CMake, and build the executable. After the build completes, press any key to launch the game engine normally (without the debugger).
-
+   "This will take a while and create a `build` directory, configure the project with CMake, and build the `run.sh` executer."
+   
+### Executing the Project
+* Normal Build
+   ```bash
+   ./run.sh
+   ```
+* Debugging with GDB
+   To debug the game engine with GDB, run the build script with the `debug` flag:
+   ```bash
+   ./run.sh debug
+   ```
+   "This will build the project and launch it with GDB. You can find the manual in `/debugger/debugger_manual.md` "
+* Clean Build
+   To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
+   ```bash
+   ./run.sh clean
+   ```
+   "This will delete the `build` directory, create a new one, configure the project with CMake, and build the executable.
+   After the build completes, press any key to launch the game engine normally (without the debugger)."
+  
 <br>
 <br>
 
@@ -76,7 +85,6 @@ This will delete the `build` directory, create a new one, configure the project 
 ### Prerequisites
 Before you start, make sure you have the following installed:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Windows or Docker Engine for Linux
-- Docker Compose (included with Docker Desktop for Windows)
 
 ### Getting Started with Docker
 
@@ -100,13 +108,13 @@ Commands:
 Typical workflow:
 ```cmd
 # Build the container
-dockrun.bat build
+dockrun.bat/sh build
 
 # Compile the build
-dockrun.bat compile
+dockrun.bat/sh compile
 
 # Open Docker shell for development
-dockrun.bat shell
+dockrun.bat/sh shell
 ```
 
 ### Working in Docker Shell Environment
@@ -120,7 +128,7 @@ Once inside the Docker shell (after running `dockrun.bat shell`), you can build 
 cd /app/docker
 
 # Build the project using the provided build script
-./build.sh <- [only terminal, no video device]
+./build.sh <- [only terminal, no video device, dont use it!]
 
 # Build and run with Xvfb virtual display
 ./build.sh xvfb
@@ -161,8 +169,9 @@ You can view your application's graphical output using a VNC client:
      2. VS Code: Click 'PORTS' tab and look for 5900
      3. Command line: Use 'docker port <container_id> 5900'
 
-   The VNC desktop is:      cb7e353684f5:0 <- dont use ":0" at the end
-   PORT=5900
+   Example output:
+      The VNC desktop is:      cb7e353684f5:0 <- exclude ":0"
+      PORT=5900
    ================================================
    ```
 ## Docker Container Details
