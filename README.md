@@ -1,6 +1,6 @@
 ## `Welcome to the Game-Engine-CPP project!`
 
-#### `This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.`
+#### This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.
 
 <br>
 <br>
