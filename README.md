@@ -32,39 +32,6 @@ This will install:
 - Make (build tool)
 - GDB (debugger)
 
-### Setting Up SDL3
-SDL3 (Simple DirectMedia Layer) is used for cross-platform graphics, audio, and input handling. To set up SDL3:
-
-1. Run the provided script to download and build SDL3 from source:
-   ```bash
-   cd tools
-   chmod +x get_sdl3.sh
-   ./get_sdl3.sh
-   ```
-   
-   This script will:
-   - Clone the SDL3 repository from GitHub
-   - Build SDL3 with CMake
-   - Configure it for use with your project
-
-2. Alternatively, you can install SDL3 manually:
-   ```bash
-   # Clone SDL3 repository
-   git clone https://github.com/libsdl-org/SDL.git libs/sdl3/SDL
-   
-   # Build SDL3
-   cd libs/sdl3/SDL
-   mkdir -p build && cd build
-   cmake .. -DCMAKE_BUILD_TYPE=Release
-   cmake --build . --config Release
-   ```
-
-3. To verify SDL3 was installed correctly:
-   ```bash
-   # The CMake configuration should automatically find SDL3
-   # when building your project if it's in the libs/sdl3 directory
-   ```
-
 ### Verifying CMake Installation
 To check the version of CMake installed, run:
 ```bash
