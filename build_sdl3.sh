@@ -1,6 +1,5 @@
 #!/bin/bash
 # Script to build and install SDL3 for your project
-# Usage: ./build_sdl3.sh
 
 # Set working directory to script location
 cd "$(dirname "$0")"
@@ -34,9 +33,12 @@ cmake .. -G Ninja \
     -DSDL_TEST=OFF
 
 echo "Building SDL3..."
-cmake --build . 
+cmake --build . --config Release
 
 echo "SDL3 build complete!"
+
+# Create bin directory if it doesn't exist
+mkdir -p ../../../../bin
 
 # Copy SDL3.dll to bin directory
 if [ -f "SDL3.dll" ]; then
