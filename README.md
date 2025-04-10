@@ -1,5 +1,4 @@
-# Game-Engine-CPP
-### `Welcome to the Game-Engine-CPP project! `
+## `Welcome to the Game-Engine-CPP project!`
 
 #### `This README will guide you through setting up your development environment and building the project using either MSYS2 and CMake or Docker.`
 
@@ -45,29 +44,31 @@ Make sure the version is 3.14 or higher.
    ```bash
    cd /c/path/to/Game-Engine-CPP
    ```
-3. Run the build script:
+3. Run the install script:
    ```bash
-   ./msysrun.sh
+   ./install.sh
    ```
-   This will create a `build` directory, configure the project with CMake, and build the executable.
+   This will create a `build` directory, configure the project with CMake, and build the `run.sh`.
 4. After the build completes, press any key to launch the game engine.
-
+### Normal Build
+```bash
+./run.sh
+```
 ### Debugging with GDB
 To debug the game engine with GDB, run the build script with the `debug` flag:
 ```bash
-./msysrun.sh debug
+./run.sh debug
 ```
 This will build the project and launch it with GDB. You can find the manual in `/debugger/debugger_manual.md` 
 
 ### Clean Build
 To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
 ```bash
-./msysrun.sh clean
+./run.sh clean
 ```
 This will delete the `build` directory, create a new one, configure the project with CMake, and build the executable. After the build completes, press any key to launch the game engine normally (without the debugger).
 
 <br>
-
 <br>
 
 # Option 2: Using Docker
@@ -88,11 +89,12 @@ dockrun.bat { build | shell | clean | rebuild | compile }
 ```
 
 Commands:
-- `build` - Build the Docker image
-- `shell` - Open an interactive shell in the container
 - `clean` - Remove Docker image and containers
-- `rebuild` - Clean and rebuild Docker image
+- `build` - Build the Docker image
 - `compile` - Build the project inside Docker
+- `shell` - Open an interactive shell in the container
+- `rebuild` - Clean and rebuild Docker image
+
 
 
 Typical workflow:
@@ -118,7 +120,7 @@ Once inside the Docker shell (after running `dockrun.bat shell`), you can build 
 cd /app/docker
 
 # Build the project using the provided build script
-./build.sh <- [only build, prints no video device error]
+./build.sh <- [only terminal, no video device]
 
 # Build and run with Xvfb virtual display
 ./build.sh xvfb
@@ -163,9 +165,7 @@ You can view your application's graphical output using a VNC client:
    PORT=5900
    ================================================
    ```
-
 ## Docker Container Details
-
 The Docker container includes:
 - Ubuntu 22.04 as the base OS
 - Essential build tools (CMake, Ninja, GCC, GDB)
@@ -176,25 +176,10 @@ The Docker container includes:
 
 <br>
 <br>
-<br>
-<br>
+
+
 
 # Troubleshooting
-
-If you encounter the "No CMAKE_CXX_COMPILER could be found" error, make sure you have installed the GCC compiler package:
-```bash
-pacman -S mingw-w64-ucrt-x86_64-gcc
-```
-After installing the compiler, clean the `build` directory and reconfigure the project:
-```bash
-rm -rf build
-mkdir build && cd build
-cmake -G Ninja ..
-```
-Then, rebuild the project:
-```bash
-cmake --build .
-```
 
 ### Xvfb and VNC Issues
 
