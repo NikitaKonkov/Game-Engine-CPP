@@ -8,7 +8,8 @@
 
 ##### `Only use one option per repository`
 
-> **Why only one option?** Due to technical constraints, MSYS2 and Docker cannot be used interchangeably in the same repository instance. When one is installed and configured, it may interfere with the other's functionality. This is an intentional design decision to maintain clean development environments.
+> **Why only one option?** Due to technical constraints, MSYS2 and Docker cannot be used interchangeably in the same repository instance. 
+When one is installed and configured, it may interfere with the other's functionality. This is an intentional design decision to maintain clean development environments.
 >
 > **Need both environments?** If you want to work with both MSYS2 and Docker:
 > 1. Clone the repository twice into separate directories
@@ -23,7 +24,7 @@
 ### Prerequisites
 Before you start, make sure you have the following installed:
 - Windows 10 or later
-- MSYS2 UCRT64 - [MSYS2 x86_64](https://www.msys2.org/) for Windows only
+- [MSYS2 x86_64](https://www.msys2.org/) only for Windows
 
 ### Setting Up MSYS2
 1. After Download, run the installer.
@@ -68,14 +69,14 @@ Make sure the version is 3.14 or higher.
 ### Executing the Project
 * Normal Build
    ```bash
-   ./run.sh
+   ./run.sh <- "use it after clean run"
    ```
 * Debugging with GDB
    To debug the game engine with GDB, run the build script with the `debug` flag:
    ```bash
    ./run.sh debug
    ```
-   "This will build the project and launch it with GDB. You can find the manual in `/debugger/debugger_manual.md` "
+   "This will build the project and launch it with GDB. You can find the manual in [Debug Manual](debugger/debugger_manual.md#interactive-mode) "
 * Clean Build
    To perform a clean build, which deletes the old build files and does a fresh build, run the build script with the `clean` flag:
    ```bash
@@ -195,7 +196,10 @@ The Docker container includes:
 
 
 
-# Troubleshooting
+# Troubleshooting & Settings
+
+### Xvfb Resolution
+   * [change Xvfb resolution](\docker\run_with_xvfb.sh)
 
 ### Xvfb and VNC Issues
 
