@@ -46,6 +46,8 @@ if "%COMMAND%"=="build" (
 
 if "%COMMAND%"=="shell" (
     echo Opening an interactive shell in the Docker container...
+    REM Clean build directory before starting shell to prevent CMake cache issues
+    call :clean_build_dir
     docker run --rm -it -v "%PROJECT_DIR%:/app" --name %CONTAINER_NAME% %IMAGE_NAME% bash
     exit /b %ERRORLEVEL%
 )
@@ -55,6 +57,7 @@ if "%COMMAND%"=="clean" (
     docker stop %CONTAINER_NAME% 2>nul
     docker rm %CONTAINER_NAME% 2>nul
     docker rmi %IMAGE_NAME% 2>nul
+    call :clean_build_dir
     exit /b 0
 )
 
@@ -71,8 +74,10 @@ if "%COMMAND%"=="compile" (
     echo Compiling the project inside Docker...
     
     REM Create output directories if they don't exist
-    if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
     if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
+    
+    REM Clean build directory before compiling
+    call :clean_build_dir
     
     REM Fix line endings in shell scripts before execution
     echo Converting script line endings for compatibility...
@@ -92,6 +97,9 @@ if "%COMMAND%"=="run" (
         echo Docker image not found. Building it first...
         docker build -t %IMAGE_NAME% "%DOCKER_DIR%"
     )
+    
+    REM Clean build directory before running
+    call :clean_build_dir
     
     REM Fix line endings before running
     docker run --rm -v "%PROJECT_DIR%:/app" %IMAGE_NAME% bash -c "find /app/docker -name \"*.sh\" -type f -exec sed -i 's/\r$//' {} \; && chmod +x /app/docker/*.sh"
@@ -131,4 +139,13 @@ echo   %CYAN%rebuild%RESET%     - Clean and rebuild Docker image
 echo   %CYAN%compile%RESET%     - Build the project inside Docker
 echo   %CYAN%direct-run%RESET%  - Directly run the executable without build
 echo.
+exit /b 0
+
+:clean_build_dir
+echo %YELLOW%Cleaning build directory to avoid CMake cache conflicts...%RESET%
+if exist "%BUILD_DIR%" (
+    rmdir /S /Q "%BUILD_DIR%"
+)
+mkdir "%BUILD_DIR%"
+echo %GREEN%Build directory cleaned.%RESET%
 exit /b 0

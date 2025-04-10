@@ -101,7 +101,7 @@ Typical workflow:
 dockrun.bat build
 
 # Compile the build
-dockrun.bat build
+dockrun.bat compile
 
 # Open Docker shell for development
 dockrun.bat shell
