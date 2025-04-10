@@ -8,6 +8,13 @@
 
 ##### `Only use one option per repository`
 
+> **Why only one option?** Due to technical constraints, MSYS2 and Docker cannot be used interchangeably in the same repository instance. When one is installed and configured, it may interfere with the other's functionality. This is an intentional design decision to maintain clean development environments.
+>
+> **Need both environments?** If you want to work with both MSYS2 and Docker:
+> 1. Clone the repository twice into separate directories
+> 2. Set up MSYS2 in one directory and Docker in the other
+> 3. This allows you to work on the same codebase using different build environments
+>
 <br>
 
 
